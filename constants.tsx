@@ -35,7 +35,7 @@ export const MOCK_PSYCHOLOGISTS: Professional[] = [
     crp: '06/99887-SP', 
     verified: true, 
     attendanceMode: 'hibrido', 
-    priceInfo: 'Online R$ 100 / Presencial R$ 160' 
+    priceInfo: 'Online R$ 100 / Presencial R$ 200 (Promo 25% OFF)' 
   },
   { 
     id: 'tdah-1', 
@@ -47,7 +47,7 @@ export const MOCK_PSYCHOLOGISTS: Professional[] = [
     crp: 'CRM 12345-SP', 
     verified: true, 
     attendanceMode: 'presencial', 
-    priceInfo: 'Consulta R$ 250' 
+    priceInfo: 'Consulta R$ 200 (Promo 25% OFF)' 
   },
   { 
     id: '2', 
@@ -122,6 +122,27 @@ export const PLANS = [
     features: ['Tudo do plano mensal', 'Acesso vitalício aos materiais', 'Prioridade em agendamentos', '3 meses grátis de IA Pro'],
     cta: 'Economizar Agora',
     popular: false
+  }
+];
+
+export const PRO_PLANS = [
+  {
+    id: 'basic',
+    name: 'Plano Essencial',
+    price: '249,00',
+    period: '/ano',
+    features: ['12 agendamentos/ano (1 por mês)', 'Modo Híbrido ou Presencial', 'Visibilidade na rede local', 'Selo de Verificação CRP'],
+    cta: 'Assinar Essencial',
+    popular: false
+  },
+  {
+    id: 'unlimited',
+    name: 'Plano Ilimitado',
+    price: '999,00',
+    period: '/ano',
+    features: ['3 a 5 agendamentos/mês', 'Prioridade no Matchmaking da IA', 'Relatórios de pré-ficha ilimitados', 'Suporte Premium 24h'],
+    cta: 'Assinar Ilimitado',
+    popular: true
   }
 ];
 
