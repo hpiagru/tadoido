@@ -35,12 +35,11 @@ export interface Professional {
   rating: number;
   imageUrl: string;
   availability: string;
-  crp: string; // Foco em CRP para Psicólogos
+  crp: string;
   verified: boolean;
   attendanceMode: AttendanceMode;
   priceInfo?: string;
   plan?: ProPlan;
-  // Added properties for admin dashboard and profile management
   paymentStatus?: 'paid' | 'pending';
   expirationDate?: string;
   crp_crm?: string; 
@@ -64,7 +63,6 @@ export interface PatientData {
   appointments?: Appointment[];
   isPremium?: boolean;
   clinicalUrgency?: 'Low' | 'Moderate' | 'High' | 'Critical';
-  // Added properties for patient profile
   favoriteSocial?: string;
   profilePhoto?: string;
 }
@@ -90,7 +88,7 @@ export type AppView =
   | 'coach' 
   | 'relax' 
   | 'journal' 
-  | 'psychologists' // Alterado de professionals
+  | 'psychologists' 
   | 'register-pro' 
   | 'register-patient' 
   | 'treatment-plan'
@@ -100,4 +98,5 @@ export type AppView =
   | 'investor-pitch'
   | 'reports'
   | 'profile'
+  | 'lgpd'
   | 'premium';
