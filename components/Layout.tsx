@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { AppView, UserRole } from '../types';
 import { NAVIGATION_ITEMS } from '../constants';
-import { LayoutDashboard, ShieldCheck, LogOut, Home, WifiOff, RefreshCcw, PhoneCall, ExternalLink, X, Heart, UserCircle, AlertTriangle, Crown } from 'lucide-react';
+import { LayoutDashboard, ShieldCheck, LogOut, Home, WifiOff, RefreshCcw, PhoneCall, ExternalLink, X, Heart, UserCircle, AlertTriangle, Crown, CalendarPlus } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -126,13 +126,24 @@ const Layout: React.FC<LayoutProps> = ({ children, activeView, setActiveView, us
         <button onClick={() => setActiveView('premium')} className={`flex flex-col items-center p-2 ${activeView === 'premium' ? 'text-amber-500' : 'text-slate-400'}`}>
           <Crown className="w-5 h-5" /><span className="text-[10px] font-bold">VIP</span>
         </button>
-        <button onClick={() => setActiveView('coach')} className={`flex flex-col items-center p-2 ${activeView === 'coach' ? 'text-indigo-600' : 'text-slate-400'}`}>
-          <Heart className="w-5 h-5" /><span className="text-[10px] font-bold">IA</span>
+        <button onClick={() => setActiveView('psychologists')} className={`flex flex-col items-center p-2 ${activeView === 'psychologists' ? 'text-indigo-600' : 'text-slate-400'}`}>
+          <CalendarPlus className="w-5 h-5" /><span className="text-[10px] font-bold">Agendar</span>
         </button>
         <button onClick={() => setActiveView('profile')} className={`flex flex-col items-center p-2 ${activeView === 'profile' ? 'text-indigo-600' : 'text-slate-400'}`}>
           <UserCircle className="w-5 h-5" /><span className="text-[10px] font-bold">Conta</span>
         </button>
       </nav>
+
+      {/* Botão Global Agendar Agora */}
+      {userRole === 'patient' && activeView !== 'psychologists' && (
+        <button 
+          onClick={() => setActiveView('psychologists')}
+          className="fixed left-6 bottom-24 md:bottom-10 z-[60] bg-emerald-600 text-white px-6 py-4 rounded-full font-black shadow-2xl flex items-center gap-2 hover:bg-emerald-700 transition-all hover:scale-105 active:scale-95"
+        >
+          <CalendarPlus className="w-5 h-5" />
+          Agendar Agora
+        </button>
+      )}
 
       {/* SOS Button */}
       {userRole === 'patient' && (

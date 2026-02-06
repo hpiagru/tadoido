@@ -4,7 +4,7 @@ import {
   Star, Video, Calendar, Shield, MapPin, Monitor, Layers, 
   Sparkles, CheckCircle, QrCode, Copy, Check, Clock, X,
   ExternalLink, BookOpen, ToggleLeft, ToggleRight, FileText, Loader2,
-  ShieldCheck
+  ShieldCheck, AlertCircle, Info
 } from 'lucide-react';
 import { MOCK_PSYCHOLOGISTS } from '../constants';
 import { AppView, AttendanceMode, Professional } from '../types';
@@ -18,30 +18,27 @@ interface PsychologistsProps {
 const PsychologistCard: React.FC<{ psychologist: Professional; logs: any[]; isRecommended?: boolean }> = ({ psychologist, logs, isRecommended }) => {
   const [activeTab, setActiveTab] = useState<'info' | 'payment' | 'scheduling' | 'confirmed'>('info');
   const [selectedMode, setSelectedMode] = useState<'online' | 'presencial' | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [shareJournal, setShareJournal] = useState(false);
   const [isGeneratingFicha, setIsGeneratingFicha] = useState(false);
-  const [clinicalFicha, setClinicalFicha] = useState<string | null>(null);
 
-  // Lógica de Preço: Online 100, Presencial 200 (com 25% de desconto promocional aplicado sobre o presencial)
-  const basePrice = selectedMode === 'online' ? 100 : 200;
-  // Desconto de 25% para consulta presencial (Promoção deste mês)
-  const promoDiscount = selectedMode === 'presencial' ? 0.25 : 0;
-  // Desconto extra de 15% se compartilhar diário (IA Match)
-  const journalDiscount = (shareJournal && selectedMode === 'online') ? 0.15 : 0;
-  
-  const finalPrice = basePrice * (1 - promoDiscount) * (1 - journalDiscount);
+  const finalPrice = selectedMode === 'online' ? 100 : (200 * 0.75); // 25% OFF
 
-  const handleGenerateFicha = async () => {
-    setIsGeneratingFicha(true);
-    const patientDataMock: any = { feels: "Relato do diário", previousTreatment: false, takesMedication: false };
-    const ficha = await geminiService.generateClinicalPreFicha(patientDataMock, logs);
-    setClinicalFicha(ficha);
-    setIsGeneratingFicha(false);
+  const getNextDays = () => {
+    const days = [];
+    const today = new Date();
+    for (let i = 1; i <= 7; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      days.push(d.toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' }));
+    }
+    return days;
   };
 
   const handleCopyPix = () => {
-    navigator.clipboard.writeText("PIX-CRP-VALIDO-CUIDADEMIM");
+    navigator.clipboard.writeText("PIX-VALIDO-CUIDADEMIM");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -66,7 +63,6 @@ const PsychologistCard: React.FC<{ psychologist: Professional; logs: any[]; isRe
              <div className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-xl text-[9px] font-black uppercase tracking-widest border border-emerald-100">
                 <CheckCircle className="w-3 h-3" /> Psicólogo CRP
              </div>
-             <p className="text-[10px] text-slate-400 font-bold mt-1 uppercase">{psychologist.crp}</p>
           </div>
         </div>
 
@@ -84,11 +80,10 @@ const PsychologistCard: React.FC<{ psychologist: Professional; logs: any[]; isRe
                 <div className="text-center"><p className="text-[10px] font-black uppercase text-blue-400">Online</p><p className="text-sm font-bold text-blue-900">R$ 100</p></div>
               </button>
               <button onClick={() => { setSelectedMode('presencial'); setActiveTab('payment'); }} className="flex flex-col items-center gap-3 p-6 bg-emerald-50 border border-emerald-100 rounded-3xl hover:bg-emerald-100 transition-all relative overflow-hidden group">
-                <div className="absolute top-2 right-2 bg-amber-400 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-tighter animate-pulse">25% OFF</div>
+                <div className="absolute top-2 right-2 bg-amber-400 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase animate-pulse">25% OFF</div>
                 <MapPin className="w-8 h-8 text-emerald-600" />
                 <div className="text-center">
                   <p className="text-[10px] font-black uppercase text-emerald-400">Presencial</p>
-                  <p className="text-xs text-slate-400 line-through">R$ 200</p>
                   <p className="text-sm font-bold text-emerald-900">R$ 150</p>
                 </div>
               </button>
@@ -98,52 +93,68 @@ const PsychologistCard: React.FC<{ psychologist: Professional; logs: any[]; isRe
 
         {activeTab === 'payment' && (
           <div className="space-y-6 animate-in slide-in-from-right-4">
-            {selectedMode === 'online' && (
-              <div className={`p-5 rounded-3xl border transition-all ${shareJournal ? 'bg-indigo-600 text-white border-indigo-500' : 'bg-slate-50 border-slate-100 text-slate-600'}`}>
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <BookOpen className={`w-5 h-5 ${shareJournal ? 'text-indigo-200' : 'text-indigo-500'}`} />
-                    <span className="text-xs font-bold">Enviar Pre-Ficha Clínica</span>
-                  </div>
-                  <button onClick={() => { setShareJournal(!shareJournal); if(!shareJournal) handleGenerateFicha(); }}>
-                    {shareJournal ? <ToggleRight className="w-8 h-8" /> : <ToggleLeft className="w-8 h-8" />}
-                  </button>
-                </div>
-                <p className="text-[10px] leading-relaxed opacity-80 font-medium italic">
-                  Gere um resumo técnico do seu diário para o psicólogo ler antes da sessão. <strong>Ganhe 15% de desconto extra.</strong>
-                </p>
-                {isGeneratingFicha && <div className="mt-3 flex items-center gap-2 text-[9px] font-black uppercase"><Loader2 className="w-3 h-3 animate-spin" /> Gerando ficha técnica...</div>}
-              </div>
-            )}
-
             <div className="bg-slate-900 p-6 rounded-[32px] text-white">
               <div className="flex items-center justify-between mb-4">
                 <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Total Agendamento</p>
-                <div className="text-right">
-                   {selectedMode === 'presencial' && <p className="text-[10px] text-emerald-400 font-bold uppercase">Promo 25% Ativada</p>}
-                   <p className="text-xl font-black">R$ {finalPrice.toFixed(2)}</p>
-                </div>
+                <p className="text-xl font-black">R$ {finalPrice.toFixed(2)}</p>
               </div>
               <div className="bg-white p-4 rounded-2xl mb-4 flex justify-center"><QrCode className="w-32 h-32 text-slate-900" /></div>
               <button onClick={handleCopyPix} className="w-full flex items-center justify-center gap-2 py-3 bg-white/10 rounded-xl text-xs font-bold hover:bg-white/20 transition-all">
                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />} {copied ? 'Copiado!' : 'Copiar PIX'}
               </button>
             </div>
-            <button onClick={() => setActiveTab('scheduling')} className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-xs uppercase hover:bg-indigo-700 shadow-xl transition-all">Paguei e Quero Agendar</button>
+            <button onClick={() => setActiveTab('scheduling')} className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-xs uppercase hover:bg-indigo-700 shadow-xl transition-all">Paguei e Quero Escolher Dia</button>
           </div>
         )}
 
         {activeTab === 'scheduling' && (
           <div className="space-y-6 animate-in zoom-in-95">
-             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Selecione o Horário</p>
-               <div className="grid grid-cols-3 gap-2">
-                  {['09:00', '10:30', '14:00', '16:00'].map(h => (
-                    <button key={h} className="py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold hover:border-indigo-500 transition-all">{h}</button>
+             <div className="space-y-4">
+               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">1. Escolha o Dia</p>
+               <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                  {getNextDays().map(day => (
+                    <button 
+                      key={day} 
+                      onClick={() => setSelectedDate(day)}
+                      className={`flex-shrink-0 px-4 py-3 rounded-2xl text-[10px] font-black uppercase border transition-all ${selectedDate === day ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400'}`}
+                    >
+                      {day}
+                    </button>
                   ))}
                </div>
              </div>
-             <button onClick={() => setActiveTab('confirmed')} className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-xs uppercase shadow-xl transition-all">Confirmar Consulta</button>
+
+             <div className="space-y-4">
+               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">2. Escolha o Horário</p>
+               <div className="grid grid-cols-3 gap-2">
+                  {['09:00', '10:30', '14:00', '16:00', '17:30'].map(h => (
+                    <button 
+                      key={h} 
+                      onClick={() => setSelectedSlot(h)}
+                      className={`py-3 rounded-xl text-xs font-bold border transition-all ${selectedSlot === h ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white border-slate-100 text-slate-500'}`}
+                    >
+                      {h}
+                    </button>
+                  ))}
+               </div>
+             </div>
+
+             <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100">
+                <div className="flex items-start gap-3">
+                   <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5" />
+                   <p className="text-[10px] text-amber-700 leading-relaxed font-bold uppercase">
+                      Regras: Cancelamento grátis até 24h antes. Remarcações seguem a mesma regra.
+                   </p>
+                </div>
+             </div>
+
+             <button 
+              disabled={!selectedDate || !selectedSlot}
+              onClick={() => setActiveTab('confirmed')} 
+              className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-xs uppercase shadow-xl transition-all disabled:opacity-30"
+             >
+               Finalizar Agendamento
+             </button>
           </div>
         )}
 
@@ -151,7 +162,10 @@ const PsychologistCard: React.FC<{ psychologist: Professional; logs: any[]; isRe
           <div className="text-center py-10 space-y-6 animate-in zoom-in-95">
              <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><CheckCircle className="w-10 h-10 text-emerald-600" /></div>
              <h3 className="text-2xl font-black text-slate-900">Consulta Confirmada!</h3>
-             <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Cuida de Mim • Saúde Mental</p>
+             <div className="p-4 bg-slate-50 rounded-2xl">
+                <p className="text-sm font-bold text-slate-700">{selectedDate} às {selectedSlot}</p>
+                <p className="text-[10px] text-slate-400 font-black uppercase mt-1">Modalidade: {selectedMode}</p>
+             </div>
              <button onClick={() => setActiveTab('info')} className="w-full bg-slate-100 text-slate-600 py-4 rounded-2xl font-black text-xs uppercase">Fechar</button>
           </div>
         )}
@@ -166,10 +180,10 @@ const Psychologists: React.FC<PsychologistsProps> = ({ onNavigate, logs }) => {
       <header className="bg-slate-900 rounded-[56px] p-12 text-white shadow-2xl relative overflow-hidden">
         <div className="relative z-10 max-w-xl">
             <div className="inline-flex items-center gap-2 bg-indigo-500/20 text-indigo-300 px-4 py-1.5 rounded-full text-[10px] font-black uppercase mb-8 border border-indigo-500/30">
-              <ShieldCheck className="w-3.5 h-3.5" /> Rede de Psicólogos CRP
+              <ShieldCheck className="w-3.5 h-3.5" /> Rede de Especialistas Cuida de Mim
             </div>
             <h2 className="text-5xl font-black mb-6 leading-tight tracking-tight">Atendimento Ético e Profissional.</h2>
-            <p className="text-slate-400 text-lg mb-10 leading-relaxed font-medium">Aproveite nossa promoção deste mês: <strong>25% de desconto</strong> em todas as consultas presenciais.</p>
+            <p className="text-slate-400 text-lg mb-10 leading-relaxed font-medium">Sua saúde mental é nossa prioridade. Todos os profissionais são validados pelo CRP.</p>
         </div>
       </header>
 
