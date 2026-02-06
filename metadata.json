@@ -1,0 +1,7 @@
+{
+  "name": "Cuida de Mim - Suporte Emocional e Coaching",
+  "description": "Uma plataforma inteligente que conecta você ao suporte emocional ideal. Pré-diagnóstico por IA, meditações e agenda direta com especialistas.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
