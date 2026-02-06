@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-// Added Sparkles to the lucide-react imports
 import { ShieldCheck, Award, FileText, Clock, ChevronLeft, Upload, CheckCircle2, Monitor, MapPin, Layers, CreditCard, QrCode, Copy, Check, Sparkles } from 'lucide-react';
 import { AppView, AttendanceMode, ProPlan } from '../types';
+import { PRO_PLANS } from '../constants';
 
 interface ProRegistrationProps {
   onNavigate: (view: AppView) => void;
@@ -12,7 +12,7 @@ const ProRegistration: React.FC<ProRegistrationProps> = ({ onNavigate }) => {
   const [submitted, setSubmitted] = useState(false);
   const [step, setStep] = useState(1);
   const [mode, setMode] = useState<AttendanceMode>('online');
-  const [selectedPlan, setSelectedPlan] = useState<ProPlan>('basic');
+  const [selectedPlan, setSelectedPlan] = useState<string>('basic');
   const [copied, setCopied] = useState(false);
 
   const handleCopyPix = () => {
@@ -46,7 +46,6 @@ const ProRegistration: React.FC<ProRegistrationProps> = ({ onNavigate }) => {
   return (
     <div className="max-w-3xl mx-auto fade-in pb-10">
       <button 
-        // Fixed navigation: changed 'professionals' to 'psychologists'
         onClick={() => onNavigate('psychologists')}
         className="flex items-center gap-2 text-slate-500 mb-6 hover:text-slate-800 transition-colors"
       >
@@ -106,40 +105,34 @@ const ProRegistration: React.FC<ProRegistrationProps> = ({ onNavigate }) => {
           ) : step === 2 ? (
             <div className="space-y-8 animate-in slide-in-from-right-10 duration-500">
                <div className="text-center">
-                  <h2 className="text-2xl font-bold text-slate-800 mb-2">Escolha seu Plano Anual</h2>
-                  <p className="text-slate-500 text-sm">O credenciamento garante visibilidade na rede e agendamento automático.</p>
+                  <h2 className="text-2xl font-bold text-slate-800 mb-2">Escolha seu Plano de Credenciamento</h2>
+                  <p className="text-slate-500 text-sm">Cancele quando quiser. Validade de 12 meses por ciclo.</p>
                </div>
 
                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div 
-                    onClick={() => setSelectedPlan('basic')}
-                    className={`p-6 rounded-[32px] border-2 cursor-pointer transition-all ${selectedPlan === 'basic' ? 'border-emerald-500 bg-emerald-50 shadow-xl scale-105' : 'border-slate-100 hover:border-emerald-200'}`}
-                  >
-                     <div className="flex justify-between items-start mb-6">
-                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
-                           <Award className="text-emerald-500 w-6 h-6" />
-                        </div>
-                        {selectedPlan === 'basic' && <CheckCircle2 className="text-emerald-500 w-6 h-6" />}
-                     </div>
-                     <h3 className="text-lg font-bold text-slate-800 mb-1">Plano Essencial</h3>
-                     <p className="text-xs text-slate-500 mb-6">Até 20 indicações da IA/ano</p>
-                     <p className="text-3xl font-black text-slate-900 mb-4">R$ 199,00<span className="text-sm font-normal text-slate-400">/ano</span></p>
-                  </div>
-
-                  <div 
-                    onClick={() => setSelectedPlan('unlimited')}
-                    className={`p-6 rounded-[32px] border-2 cursor-pointer transition-all ${selectedPlan === 'unlimited' ? 'border-emerald-500 bg-emerald-50 shadow-xl scale-105' : 'border-slate-100 hover:border-emerald-200'}`}
-                  >
-                     <div className="flex justify-between items-start mb-6">
-                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
-                           <Sparkles className="text-emerald-500 w-6 h-6" />
-                        </div>
-                        {selectedPlan === 'unlimited' && <CheckCircle2 className="text-emerald-500 w-6 h-6" />}
-                     </div>
-                     <h3 className="text-lg font-bold text-slate-800 mb-1">Plano Ilimitado</h3>
-                     <p className="text-xs text-slate-500 mb-6">Indicações e agenda ilimitadas</p>
-                     <p className="text-3xl font-black text-slate-900 mb-4">R$ 399,00<span className="text-sm font-normal text-slate-400">/ano</span></p>
-                  </div>
+                  {PRO_PLANS.map(plan => (
+                    <div 
+                      key={plan.id}
+                      onClick={() => setSelectedPlan(plan.id)}
+                      className={`p-6 rounded-[32px] border-2 cursor-pointer transition-all flex flex-col justify-between ${selectedPlan === plan.id ? 'border-emerald-500 bg-emerald-50 shadow-xl scale-105' : 'border-slate-100 hover:border-emerald-200'}`}
+                    >
+                       <div>
+                          <div className="flex justify-between items-start mb-6">
+                             <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                                {plan.id === 'unlimited' ? <Sparkles className="text-emerald-500 w-6 h-6" /> : <Award className="text-emerald-500 w-6 h-6" />}
+                             </div>
+                             {selectedPlan === plan.id && <CheckCircle2 className="text-emerald-500 w-6 h-6" />}
+                          </div>
+                          <h3 className="text-lg font-bold text-slate-800 mb-1">{plan.name}</h3>
+                          <ul className="text-xs text-slate-500 mb-6 space-y-2">
+                             {plan.features.map((f, idx) => (
+                               <li key={idx} className="flex items-center gap-2"><Check className="w-3 h-3 text-emerald-500" /> {f}</li>
+                             ))}
+                          </ul>
+                       </div>
+                       <p className="text-3xl font-black text-slate-900">R$ {plan.price}<span className="text-sm font-normal text-slate-400">{plan.period}</span></p>
+                    </div>
+                  ))}
                </div>
 
                <div className="flex gap-4">
@@ -155,8 +148,8 @@ const ProRegistration: React.FC<ProRegistrationProps> = ({ onNavigate }) => {
                         <CreditCard className="text-emerald-400" />
                      </div>
                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Pagamento PIX</p>
-                        <p className="text-lg font-bold">Total: {selectedPlan === 'basic' ? 'R$ 199,00' : 'R$ 399,00'}</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Pagamento PIX Anual</p>
+                        <p className="text-lg font-bold">Total: R$ {selectedPlan === 'basic' ? '249,00' : '999,00'}</p>
                      </div>
                   </div>
 
@@ -165,10 +158,9 @@ const ProRegistration: React.FC<ProRegistrationProps> = ({ onNavigate }) => {
                         <QrCode className="w-40 h-40 text-slate-900" />
                         <div className="absolute inset-0 bg-emerald-500/10" />
                      </div>
-                     <p className="text-slate-400 text-[10px] font-bold uppercase mb-4">Escaneie o QR Code acima</p>
+                     <p className="text-slate-400 text-[10px] font-bold uppercase mb-4 text-center leading-relaxed">Escaneie o QR Code para ativar seu selo de psicólogo credenciado</p>
                      
                      <div className="w-full space-y-2">
-                        <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest text-center">Ou copie o código abaixo</p>
                         <div className="flex items-center gap-2 bg-slate-50 p-3 rounded-xl border border-slate-100 w-full overflow-hidden">
                            <input 
                               readOnly 
@@ -191,7 +183,7 @@ const ProRegistration: React.FC<ProRegistrationProps> = ({ onNavigate }) => {
                </div>
                
                <p className="text-center text-[10px] text-slate-400 uppercase font-bold tracking-widest">
-                  Seu acesso será liberado após a compensação do PIX e validação documental.
+                  O Cuida de Mim processa sua ativação em até 72h úteis após o PIX.
                </p>
             </div>
           )}

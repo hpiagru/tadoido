@@ -80,6 +80,50 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate, onSetRole }) => {
         </div>
       </section>
 
+      {/* Seção Estratégica para Psicólogos */}
+      <section className="py-32 bg-emerald-50 border-y border-emerald-100">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+           <div>
+              <h2 className="text-5xl font-black text-slate-900 mb-8 leading-tight">Você cuida da clínica. <br /><span className="text-emerald-600">A IA Cuida da Agenda.</span></h2>
+              <p className="text-xl text-slate-500 leading-relaxed mb-10 font-medium">
+                Psicólogo, pare de perder tempo com triagens manuais e captação incerta. No <strong>Cuida de Mim</strong>, nossa IA faz a triagem clínica pesada e conecta você a pacientes que realmente precisam da sua expertise.
+              </p>
+              <ul className="space-y-4 mb-10">
+                 <li className="flex items-center gap-3 font-bold text-slate-700"><CheckCircle className="text-emerald-500" /> Agenda Cheia com Matchmaking Inteligente</li>
+                 <li className="flex items-center gap-3 font-bold text-slate-700"><CheckCircle className="text-emerald-500" /> Relatórios de Pré-Ficha formatados pela IA</li>
+                 <li className="flex items-center gap-3 font-bold text-slate-700"><CheckCircle className="text-emerald-500" /> Pagamento Garantido e Fluxo Simplificado</li>
+              </ul>
+              <button onClick={() => onNavigate('register-pro')} className="bg-emerald-600 text-white px-10 py-5 rounded-3xl font-black text-lg shadow-xl shadow-emerald-200 hover:bg-emerald-700 transition-all flex items-center gap-3">
+                 Quero ser um Especialista Credenciado <ArrowRight className="w-6 h-6" />
+              </button>
+           </div>
+           <div className="relative">
+              <div className="bg-white p-10 rounded-[64px] shadow-2xl border border-emerald-100">
+                 <div className="flex items-center gap-4 mb-8">
+                    <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 font-black">CRP</div>
+                    <div>
+                       <p className="text-sm font-black text-slate-900">Dr. Marcos Neuro</p>
+                       <p className="text-xs text-slate-400 font-bold uppercase">Membro desde 2023</p>
+                    </div>
+                 </div>
+                 <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 italic text-slate-500 text-sm leading-relaxed mb-6">
+                    "O Cuida de Mim mudou minha forma de clinicar. Recebo o paciente com um histórico completo gerado pela IA, o que economiza pelo menos 3 sessões de anamnese básica."
+                 </div>
+                 <div className="flex items-center justify-between">
+                    <div className="flex gap-1 text-amber-400">
+                       <Star className="w-4 h-4 fill-current" />
+                       <Star className="w-4 h-4 fill-current" />
+                       <Star className="w-4 h-4 fill-current" />
+                       <Star className="w-4 h-4 fill-current" />
+                       <Star className="w-4 h-4 fill-current" />
+                    </div>
+                    <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Feedback Real</span>
+                 </div>
+              </div>
+           </div>
+        </div>
+      </section>
+
       {/* Como a Psicologia te ajuda? */}
       <section className="py-32 px-6">
         <div className="max-w-7xl mx-auto">
